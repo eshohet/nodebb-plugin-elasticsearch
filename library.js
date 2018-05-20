@@ -237,6 +237,11 @@ Elasticsearch.search = function(data, callback) {
 							match: {
 								title: escapeSpecialChars(data.content)
 							}
+						},
+						{
+							match: {
+								tags: escapeSpecialChars(data.content)
+							}
 						}
 					]
 				}
@@ -572,8 +577,16 @@ Elasticsearch.indexTopic = function(topicObj, callback) {
 
 			posts.getPostsFields(pids, ['pid', 'content'], next);
 		},
-		function(posts, next) {
-			async.map(posts, Elasticsearch.indexPost, next);
+        function (posts, next) {
+            topics.getTopicTags(topicObj.tid, (e, tags) => {
+                next(e, posts, tags);
+            });
+        },
+		function(posts, tags, next) {
+			async.map(posts,(post, next) => {
+				post.tags = tags;
+                Elasticsearch.indexPost(post, next);
+			}, next);
 		}
 	], function(err, payload) {
 		if (err) {
@@ -662,6 +675,9 @@ Elasticsearch.indexPost = function(postData, callback) {
 	if (postData.content) {
 		payload.content = postData.content;
 	}
+
+	if(postData.tags)
+		payload.tags = postData.tags;
 
 	if (typeof callback === 'function') {
 		callback(undefined, payload);
