@@ -251,10 +251,12 @@ Elasticsearch.search = function(data, callback) {
 			callback(err);
 		} else if (obj && obj.hits && obj.hits.hits && obj.hits.hits.length > 0) {
 
-			var payload = obj.hits.hits.map(function(result) {
-				return parseInt(result._source.pid, 10);
+			const payload = obj.hits.hits.map((hit) => {
+				return parseInt(hit._source.id, 10);
 			});
-			console.log(payload);
+			// var payload = obj.hits.hits.map(function(result) {
+			// 	return parseInt(result._source.pid, 10);
+			// });
 			callback(null, payload);
 			//cache.set(data.query, payload);
 		} else {
