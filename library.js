@@ -142,15 +142,15 @@ Elasticsearch.getTopicCount = function(callback) {
 		index: Elasticsearch.config.index_name,
 		body: {
 			query: {
-								
+
 					constant_score: {
 					filter: {
 						exists: {
 							field: "_source.title"
 						}
 					}
-				}	
-				
+				}
+
 			}
 		}
 	}, function (error, response) {
@@ -229,7 +229,7 @@ Elasticsearch.search = function(data, callback) {
 				dis_max: {
 					queries: [
 						{
-							match: {	
+							match: {
 								content: escapeSpecialChars(data.content)
 							}
 						},
@@ -250,7 +250,7 @@ Elasticsearch.search = function(data, callback) {
 		if (err) {
 			callback(err);
 		} else if (obj && obj.hits && obj.hits.hits && obj.hits.hits.length > 0) {
-			
+
 			var payload = obj.hits.hits.map(function(result) {
 				return parseInt(result._source.pid, 10);
 			});
@@ -712,6 +712,8 @@ Elasticsearch.rebuildIndex = function(req, res) {
 				});
 			});
 		}, {batch: parseInt(Elasticsearch.config.batch_size, 10)}, function(err) {
+			if(err)
+				winston.error(err.message);
 			if (!err) {
 				res.sendStatus(200);
 			}
@@ -732,7 +734,7 @@ Elasticsearch.createIndex = function(callback) {
 			if (!err) {
 				callback(null, results);
 			}
-			else if ( /IndexAlreadyExistsException/im.test(err.message) ) { // we can ignore if index is already there
+			else if ( /index_already_exists/im.test(err.message) ) { // we can ignore if index is already there
 				winston.info("[plugin/elasticsearch] Ignoring error creating mapping " + err);
 				callback(null);
 			}
@@ -756,7 +758,7 @@ Elasticsearch.deleteIndex = function(callback) {
 			if (!err) {
 				callback(null, results);
 			}
-			else if ( /IndexMissingException/im.test(err.message) ) { // we can ignore if index is not there
+			else if ( /index_not_found/im.test(err.message) ) { // we can ignore if index is not there
 				winston.info("[plugin/elasticsearch] Ignoring error deleting mapping " + err);
 				callback(null);
 			}
