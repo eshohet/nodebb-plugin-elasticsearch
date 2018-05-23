@@ -19,5 +19,8 @@
   "less": [
     "static/style.less"
   ],
+  "acpScripts": [
+    "./lib/acp.js"
+  ],
   "templates": "templates"
 }
