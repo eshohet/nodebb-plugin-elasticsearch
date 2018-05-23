@@ -11,6 +11,10 @@
     {
       "hook": "filter:admin.header.build",
       "method": "filters.buildAdmin"
+    },
+    {
+      "hook": "filter:search.query",
+      "method": "filters.search"
     }
   ],
   "staticDirs": {
