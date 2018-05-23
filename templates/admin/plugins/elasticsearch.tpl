@@ -6,7 +6,7 @@
 		<form role="form" class="elasticsearch-settings">
 			<div class="form-group">
 				<label for="host">Host</label>
-				<input class="form-control" type="text" name="host" id="host" placeholder="Default: 127.0.0.1:9200" />
+				<input class="form-control" value="{host}" type="text" name="host" id="host" placeholder="Default: 127.0.0.1:9200" />
 				<p class="help-block">
 					Host can be:
 					<ul>
@@ -29,15 +29,15 @@
 			<h4>Indexing Settings</h4>
 			<div class="form-group">
 				<label for="index_name">Index Name</label>
-				<input class="form-control" type="text" name="index_name" id="index_name" placeholder="Default: nodebb"/>
+				<input class="form-control" value="{index}" type="text" name="index_name" id="index_name" placeholder="Default: nodebb"/>
 			</div>
 			<div class="form-group">
 				<label for="post_type">Post Type</label>
-				<input class="form-control" type="text" name="post_type" id="post_type" placeholder="Default: posts" />
+				<input class="form-control" value="{post_type}" type="text" name="post_type" id="post_type" placeholder="Default: posts" />
 			</div>
 			<div class="form-group">
 				<label for="post_type">Batch Index Size</label>
-				<input class="form-control" type="text" name="batch_size" id="batch_size" placeholder="Default: 1000" />
+				<input class="form-control" value="{batch_size}" type="text" name="batch_size" id="batch_size" placeholder="Default: 1000" />
 			</div>
 			<button id="save" type="button" class="btn btn-primary btn-block">Save</button>
 		</form>
@@ -115,94 +115,3 @@
 		</div>
 	</div>
 </div>
-<script>
-	$(document).ready(function() {
-		var	csrf = '{csrf}' || $('#csrf_token').val();
-
-		// Flush event
-		$('button[data-action="flush"]').on('click', function() {
-			bootbox.confirm('Are you sure you wish to empty the Elasticsearch search index?', function(confirm) {
-				if (confirm) {
-					$.ajax({
-						url: config.relative_path + '/admin/plugins/elasticsearch/flush',
-						type: 'DELETE',
-						data: {
-							_csrf: csrf
-						}
-					}).success(function() {
-						ajaxify.refresh();
-
-						app.alert({
-							type: 'success',
-							alert_id: 'elasticsearch-flushed',
-							title: 'Search index flushed',
-							timeout: 2500
-						});
-					});
-				}
-			});
-		});
-
-		// Toggle event
-		$('button[data-action="toggle"]').on('click', function() {
-			$.ajax({
-				url: config.relative_path + '/admin/plugins/elasticsearch/toggle',
-				type: 'POST',
-				data: {
-					_csrf: csrf,
-					state: parseInt($('button[data-action="toggle"]').attr('data-enabled'), 10) ^ 1
-				}
-			}).success(ajaxify.refresh);
-		});
-
-		// Index All event
-		$('button[data-action="rebuild"]').on('click', function() {
-			bootbox.confirm('Rebuild search index?', function(confirm) {
-				if (confirm) {
-					app.alert({
-						type: 'info',
-						alert_id: 'elasticsearch-rebuilt',
-						title: '<i class="fa fa-refresh fa-spin"></i> Rebuilding search index...'
-					});
-
-					$.ajax({
-						url: config.relative_path + '/admin/plugins/elasticsearch/rebuild',
-						type: 'POST',
-						data: {
-							_csrf: csrf
-						}
-					}).success(function() {
-						ajaxify.refresh();
-
-						app.alert({
-							type: 'success',
-							alert_id: 'elasticsearch-rebuilt',
-							title: 'Search index rebuilt',
-							timeout: 2500
-						});
-					});
-				}
-			});
-		});
-
-		// Settings form event
-		require(['settings'], function(Settings) {
-			Settings.load('elasticsearch', $('.elasticsearch-settings'));
-
-			$('#save').on('click', function() {
-				Settings.save('elasticsearch', $('.elasticsearch-settings'), function() {
-					app.alert({
-						type: 'success',
-						alert_id: 'elasticsearch-saved',
-						title: 'Settings Saved',
-						message: 'Click here to reload.',
-						timeout: 2500,
-						clickfn: function() {
-							socket.emit('admin.reload');
-						}
-					});
-				});
-			});
-		});
-	});
-</script>

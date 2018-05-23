@@ -1,11 +1,11 @@
 {
   "name": "nodebb-plugin-elasticsearch",
-  "version": "0.1.2",
+  "version": "0.0.1",
   "description": "Full-text searching using Elasticsearch",
   "main": "library.js",
   "repository": {
     "type": "git",
-    "url": "https://github.com/q8888620002/nodebb-plugin-elasticsearch"
+    "url": "https://github.com/eshohet/nodebb-plugin-elasticsearch"
   },
   "keywords": [
     "nodebb",
@@ -18,14 +18,10 @@
     "email": "serpitine108@gmail.com"
   },
   "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/q8888620002/nodebb-plugin-elasticsearch/issues"
-  },
   "readmeFilename": "README.md",
   "dependencies": {
-    "elasticsearch": "^14.2.1",
-    "lru-cache": "^4.0.2",
-    "underscore.string": "^3.3.4"
+    "async": "^2.6.1",
+    "elasticsearch": "^14.2.1"
   },
   "nbbpm": {
     "compatibility": "^1.x.x"
